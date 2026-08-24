@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R.Consulting — Dashboard Maître</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111318;--muted:#9a9ea8;--line:#e2e3e6;--gold:#f59e0b;--terra:#c2552b;--ok:#0e9f6e;--bad:#dc2626}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#fafafa;color:var(--ink);padding-bottom:60px;-webkit-font-smoothing:antialiased}
+.header{position:sticky;top:0;z-index:10;background:rgba(250,250,250,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:13px 16px;display:flex;align-items:center;gap:11px}
+.logo{width:36px;height:36px;border-radius:11px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+.h-t{flex:1}
+.h-name{font-weight:800;font-size:.92rem}
+.h-sub{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)}
+.total-num{font-size:1.9rem;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;text-align:right}
+.total-lbl{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1px;text-align:right}
+.wrap{max-width:960px;margin:0 auto;padding:14px}
+.stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.stat{flex:1;min-width:110px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;text-align:center}
+.stat b{display:block;font-size:1.1rem;font-weight:900}
+.stat span{font-family:'DM Mono',monospace;font-size:.53rem;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
+.alertbox{background:#fef2f2;border:1px solid #f5c6c6;border-radius:16px;padding:14px;margin-bottom:14px;display:none}
+.alertbox h3{font-size:.82rem;font-weight:800;color:var(--bad);margin-bottom:6px}
+.alertbox div{font-size:.76rem;line-height:1.7}
+.okbox{background:#f0fdf6;border:1px solid #bbe8d0;border-radius:16px;padding:11px 14px;margin-bottom:14px;font-size:.76rem;color:var(--ok);font-weight:700;display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:block;color:inherit;text-decoration:none}
+.card:active{transform:scale(.99)}
+.card h2{font-size:.9rem;font-weight:800;margin-bottom:2px}
+.card .sub{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-top:1px dashed var(--line);font-size:.76rem}
+.row:first-of-type{border-top:0}
+.row b{font-family:'DM Mono',monospace;font-weight:700}
+.big{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.up{color:var(--ok)}.dn{color:var(--bad)}.mut{color:var(--muted)}
+.err{color:var(--bad);font-size:.7rem;font-family:'DM Mono',monospace}
+#status{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--muted);margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">R.</div>
+  <div class="h-t"><div class="h-name">Dashboard Maître</div><div class="h-sub">tous les trackers R.Consulting · page privée</div></div>
+  <div><div class="total-num" id="grand">—</div><div class="total-lbl">AVIS PARC</div></div>
+</div>
+<div class="wrap">
+  <div id="status">Chargement des trackers…</div>
+  <div class="stats">
+    <div class="stat"><b id="sDelta">—</b><span>avis auj. (parc)</span></div>
+    <div class="stat"><b id="sTop3">—</b><span>fiches top 3</span></div>
+    <div class="stat"><b id="sFiches">—</b><span>fiches suivies</span></div>
+    <div class="stat"><b id="sAlerts">—</b><span>alertes</span></div>
+  </div>
+  <div class="okbox" id="okbox">✓ Aucune alerte — aucun avis supprimé sur le parc</div>
+  <div class="alertbox" id="alertbox"><h3>⚠ Alertes — avis supprimés</h3><div id="alerts"></div></div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+// ══ Ajoute ici chaque nouveau tracker client ══
+const SITES=[
+  {label:"Belgique · P2", url:"https://trackergmb.netlify.app", page:"/tracker.html"},
+  {label:"Sacha", url:"https://trackersacha.netlify.app", page:"/"},
+  {label:"Sander", url:"https://trackersander.netlify.app", page:"/"},
+  {label:"Mika · Clim IDF", url:"https://trackermika.netlify.app", page:"/"},
+  {label:"Timmy", url:"https://trackertimmy.netlify.app", page:"/"},
+  {label:"David · Alsace", url:"https://trackerdavidd.netlify.app", page:"/"}
+];
+const $=id=>document.getElementById(id);
+const num=v=>v&&typeof v==='object'?v.n:v;
+const lastTwo=s=>{const d=Object.keys(s||{}).sort();return[d[d.length-1]?s[d[d.length-1]]:{},d[d.length-2]?s[d[d.length-2]]:{},d]};
+
+async function load(){
+  let grand=0,grandPrev=0,top3=0,nf=0,alerts=[];let loaded=0;
+  const cards=await Promise.all(SITES.map(async site=>{
+    try{
+      const d=await(await fetch(site.url+'/.netlify/functions/data')).json();
+      loaded++;
+      const[aC,aP,aD]=lastTwo(d.avis),[rC]=lastTwo(d.rank);
+      const tot=Object.values(aC).reduce((s,v)=>s+(num(v)||0),0);
+      const prev=Object.values(aP).reduce((s,v)=>s+(num(v)||0),0);
+      const delta=Object.keys(aP).length?tot-prev:null;
+      const poss=Object.values(rC).filter(p=>p);
+      const t3=poss.filter(p=>p<=3).length;
+      const fiches=Object.keys(d.ids||{}).length;
+      grand+=tot;grandPrev+=Object.keys(aP).length?prev:tot;top3+=t3;nf+=fiches;
+      for(const name in aC){
+        const a=num(aC[name]),ap=num(aP[name]);
+        if(a!=null&&ap!=null&&a<ap)alerts.push(site.label+' · '+name+' : <b class="dn">'+(a-ap)+' avis</b>');
+      }
+      const dSt=delta==null?'<b class="mut">—</b>':delta>=0?'<b class="up">+'+delta+'</b>':'<b class="dn">'+delta+'</b>';
+      return '<a class="card" href="'+site.url+site.page+'" target="_blank"><h2>'+site.label+'</h2><div class="sub">'+site.url.replace('https://','')+' · relevé '+(aD[aD.length-1]||'—')+'</div>'+
+        '<div class="row"><span>Avis total</span><b class="big">'+tot+'</b></div>'+
+        '<div class="row"><span>Avis aujourd\u2019hui</span>'+dSt+'</div>'+
+        '<div class="row"><span>Fiches top 3</span><b>'+(poss.length?t3:'—')+'</b></div>'+
+        '<div class="row"><span>Fiches suivies</span><b>'+fiches+'</b></div></a>';
+    }catch(e){
+      return '<div class="card"><h2>'+site.label+'</h2><div class="sub">'+site.url.replace('https://','')+'</div><div class="err">injoignable — site pas encore déployé en v3 ?</div></div>';
+    }
+  }));
+  $('grid').innerHTML=cards.join('');
+  $('grand').textContent=grand||'—';
+  const gd=grand-grandPrev;
+  $('sDelta').textContent=loaded?((gd>=0?'+':'')+gd):'—';
+  $('sTop3').textContent=top3;
+  $('sFiches').textContent=nf;
+  $('sAlerts').textContent=alerts.length;
+  $('status').textContent=loaded+'/'+SITES.length+' trackers chargés · '+new Date().toLocaleString('fr-FR');
+  if(alerts.length){$('alertbox').style.display='block';$('alerts').innerHTML=alerts.join('<br>')}
+  else if(loaded){$('okbox').style.display='block'}
+}
+load();
+</script>
+</body>
+</html>

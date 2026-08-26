@@ -1,117 +1,109 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>R.Consulting — Dashboard Maître</title>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Master R.Consulting — Parc GBP</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#111318;--muted:#9a9ea8;--line:#e2e3e6;--gold:#f59e0b;--terra:#c2552b;--ok:#0e9f6e;--bad:#dc2626}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#fafafa;color:var(--ink);padding-bottom:60px;-webkit-font-smoothing:antialiased}
-.header{position:sticky;top:0;z-index:10;background:rgba(250,250,250,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:13px 16px;display:flex;align-items:center;gap:11px}
-.logo{width:36px;height:36px;border-radius:11px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
-.h-t{flex:1}
-.h-name{font-weight:800;font-size:.92rem}
-.h-sub{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)}
-.total-num{font-size:1.9rem;font-weight:900;letter-spacing:-1.5px;background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;text-align:right}
-.total-lbl{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--muted);letter-spacing:1px;text-align:right}
-.wrap{max-width:960px;margin:0 auto;padding:14px}
-.stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.stat{flex:1;min-width:110px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;text-align:center}
-.stat b{display:block;font-size:1.1rem;font-weight:900}
-.stat span{font-family:'DM Mono',monospace;font-size:.53rem;color:var(--muted);letter-spacing:.7px;text-transform:uppercase}
-.alertbox{background:#fef2f2;border:1px solid #f5c6c6;border-radius:16px;padding:14px;margin-bottom:14px;display:none}
-.alertbox h3{font-size:.82rem;font-weight:800;color:var(--bad);margin-bottom:6px}
-.alertbox div{font-size:.76rem;line-height:1.7}
-.okbox{background:#f0fdf6;border:1px solid #bbe8d0;border-radius:16px;padding:11px 14px;margin-bottom:14px;font-size:.76rem;color:var(--ok);font-weight:700;display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:block;color:inherit;text-decoration:none}
-.card:active{transform:scale(.99)}
-.card h2{font-size:.9rem;font-weight:800;margin-bottom:2px}
-.card .sub{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);margin-bottom:10px}
-.row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-top:1px dashed var(--line);font-size:.76rem}
-.row:first-of-type{border-top:0}
-.row b{font-family:'DM Mono',monospace;font-weight:700}
-.big{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-.up{color:var(--ok)}.dn{color:var(--bad)}.mut{color:var(--muted)}
-.err{color:var(--bad);font-size:.7rem;font-family:'DM Mono',monospace}
-#status{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--muted);margin-bottom:12px}
-</style>
-</head>
-<body>
-<div class="header">
-  <div class="logo">R.</div>
-  <div class="h-t"><div class="h-name">Dashboard Maître</div><div class="h-sub">tous les trackers R.Consulting · page privée</div></div>
-  <div><div class="total-num" id="grand">—</div><div class="total-lbl">AVIS PARC</div></div>
-</div>
+body{font-family:'DM Sans',sans-serif;background:#fafafa;color:var(--ink);padding-bottom:50px}
+.header{position:sticky;top:0;z-index:10;background:rgba(250,250,250,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
+.h-t{flex:1}.h-name{font-weight:800;font-size:.95rem}
+.h-sub{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted)}
+.btn{font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;background:var(--ink);color:#fff}
+.btn:disabled{opacity:.5}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
+.card .lbl{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.card .val{font-size:1.7rem;font-weight:900;letter-spacing:-1px;margin-top:4px}
+.card.main .val{background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.msg{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin:8px 2px}
+table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+thead th{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#fcfcfd}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#f9f9fb}
+.sname{font-weight:800;font-size:.85rem}.sname a{color:var(--ink);text-decoration:none;border-bottom:1px dashed var(--terra)}
+.sub{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);margin-top:2px}
+.mono{font-family:'DM Mono',monospace;font-weight:800}
+.delta{font-family:'DM Mono',monospace;font-size:.62rem;font-weight:700;margin-left:5px}
+.up{color:var(--ok)}.warn{color:var(--bad)}
+.star{color:var(--gold);font-weight:800}
+.err{color:var(--bad);font-family:'DM Mono',monospace;font-size:.62rem}
+</style></head><body>
+<div class="header"><div class="logo">R.</div>
+<div class="h-t"><div class="h-name">Master — Parc GBP R.Consulting</div><div class="h-sub" id="hsub">tous les trackers · agrégation en direct</div></div>
+<button class="btn" id="go" onclick="load()">↻ Actualiser</button></div>
 <div class="wrap">
-  <div id="status">Chargement des trackers…</div>
-  <div class="stats">
-    <div class="stat"><b id="sDelta">—</b><span>avis auj. (parc)</span></div>
-    <div class="stat"><b id="sTop3">—</b><span>fiches top 3</span></div>
-    <div class="stat"><b id="sFiches">—</b><span>fiches suivies</span></div>
-    <div class="stat"><b id="sAlerts">—</b><span>alertes</span></div>
-  </div>
-  <div class="okbox" id="okbox">✓ Aucune alerte — aucun avis supprimé sur le parc</div>
-  <div class="alertbox" id="alertbox"><h3>⚠ Alertes — avis supprimés</h3><div id="alerts"></div></div>
-  <div class="grid" id="grid"></div>
+<div class="cards">
+<div class="card main"><div class="lbl">Avis parc</div><div class="val" id="cAvis">—</div></div>
+<div class="card"><div class="lbl">Fiches suivies</div><div class="val" id="cFiches">—</div></div>
+<div class="card"><div class="lbl">Liées</div><div class="val" id="cLinked">—</div></div>
+<div class="card"><div class="lbl">Top 3 local</div><div class="val" id="cTop3">—</div></div>
+<div class="card"><div class="lbl">Alertes ⚠</div><div class="val" id="cAlert">—</div></div>
 </div>
-
+<div class="msg" id="msg">Clique sur Actualiser</div>
+<table><thead><tr><th>Site</th><th>Fiches</th><th>Liées</th><th>Avis</th><th>⭐ moy</th><th>Top 3</th><th>Alertes</th></tr></thead>
+<tbody id="tb"></tbody></table>
+</div>
 <script>
-// ══ Ajoute ici chaque nouveau tracker client ══
 const SITES=[
-  {label:"Belgique · P2", url:"https://trackergmb.netlify.app", page:"/tracker.html"},
-  {label:"Sacha", url:"https://trackersacha.netlify.app", page:"/"},
-  {label:"Sander", url:"https://trackersander.netlify.app", page:"/"},
-  {label:"Mika · Clim IDF", url:"https://trackermika.netlify.app", page:"/"},
-  {label:"Timmy", url:"https://trackertimmy.netlify.app", page:"/"},
-  {label:"David · Alsace", url:"https://trackerdavidd.netlify.app", page:"/"}
+ {name:'P1 Belgique · Pro Toiturier',url:'https://trackerp1belgique.netlify.app'},
+ {name:'P2 Belgique',url:'https://trackergmb.netlify.app'},
+ {name:'Antoine · Haute-Savoie + Var',url:'https://trackerantoine.netlify.app'},
+ {name:'Michel · Var/Nice',url:'https://trackermichel.netlify.app'},
+ {name:'Sacha · Belgique',url:'https://trackersacha.netlify.app'},
+ {name:'Sander · Est-Var',url:'https://trackersander.netlify.app'},
+ {name:'Mika · Clim & PAC IDF',url:'https://trackermika.netlify.app'},
+ {name:'Timmy · Rhône-Alpes',url:'https://trackertimmy.netlify.app'},
+ {name:'David · Alsace',url:'https://trackerdavidd.netlify.app'},
+ {name:'Jérémy · 06 + NBL',url:'https://trackerjeremy.netlify.app'},
+ {name:'Logan · Hérault',url:'https://trackerlogan.netlify.app'},
+ {name:'Fiches solo',url:'https://trackersolo.netlify.app'},
 ];
 const $=id=>document.getElementById(id);
-const num=v=>v&&typeof v==='object'?v.n:v;
-const lastTwo=s=>{const d=Object.keys(s||{}).sort();return[d[d.length-1]?s[d[d.length-1]]:{},d[d.length-2]?s[d[d.length-2]]:{},d]};
-
+const dates=o=>Object.keys(o||{}).sort();
+function siteStats(d){
+  const av=d.avis||{},rk=d.rank||{},ids=d.ids||{};
+  const ds=dates(av);const now=av[ds[ds.length-1]]||{},prev=av[ds[ds.length-2]]||{};
+  const rds=dates(rk);const rnow=rk[rds[rds.length-1]]||{};
+  let tot=0,totPrev=0,top3=0,alerts=0,linked=0,notes=[];
+  for(const f of (d.fiches||[])){
+    if(ids[f.name])linked++;
+    const a=now[f.name],p=prev[f.name];
+    if(a&&a.n!=null){tot+=a.n;if(a.r)notes.push(a.r)}
+    if(p&&p.n!=null)totPrev+=p.n;
+    if(a&&p&&a.n<p.n)alerts++;
+    if(!ids[f.name])alerts++;
+    const pos=rnow[f.name];if(pos!=null&&pos<=3)top3++;
+  }
+  const avg=notes.length?(notes.reduce((x,y)=>x+y,0)/notes.length):null;
+  return{n:(d.fiches||[]).length,linked,tot,dTot:totPrev?tot-totPrev:0,avg,top3,alerts};
+}
 async function load(){
-  let grand=0,grandPrev=0,top3=0,nf=0,alerts=[];let loaded=0;
-  const cards=await Promise.all(SITES.map(async site=>{
+  $('go').disabled=true;$('tb').innerHTML='';
+  let T={n:0,linked:0,tot:0,top3:0,alerts:0};let okN=0;
+  for(const s of SITES){
+    $('msg').textContent='Lecture '+s.name+'…';
+    const tr=document.createElement('tr');
     try{
-      const d=await(await fetch(site.url+'/.netlify/functions/data')).json();
-      loaded++;
-      const[aC,aP,aD]=lastTwo(d.avis),[rC]=lastTwo(d.rank);
-      const tot=Object.values(aC).reduce((s,v)=>s+(num(v)||0),0);
-      const prev=Object.values(aP).reduce((s,v)=>s+(num(v)||0),0);
-      const delta=Object.keys(aP).length?tot-prev:null;
-      const poss=Object.values(rC).filter(p=>p);
-      const t3=poss.filter(p=>p<=3).length;
-      const fiches=Object.keys(d.ids||{}).length;
-      grand+=tot;grandPrev+=Object.keys(aP).length?prev:tot;top3+=t3;nf+=fiches;
-      for(const name in aC){
-        const a=num(aC[name]),ap=num(aP[name]);
-        if(a!=null&&ap!=null&&a<ap)alerts.push(site.label+' · '+name+' : <b class="dn">'+(a-ap)+' avis</b>');
-      }
-      const dSt=delta==null?'<b class="mut">—</b>':delta>=0?'<b class="up">+'+delta+'</b>':'<b class="dn">'+delta+'</b>';
-      return '<a class="card" href="'+site.url+site.page+'" target="_blank"><h2>'+site.label+'</h2><div class="sub">'+site.url.replace('https://','')+' · relevé '+(aD[aD.length-1]||'—')+'</div>'+
-        '<div class="row"><span>Avis total</span><b class="big">'+tot+'</b></div>'+
-        '<div class="row"><span>Avis aujourd\u2019hui</span>'+dSt+'</div>'+
-        '<div class="row"><span>Fiches top 3</span><b>'+(poss.length?t3:'—')+'</b></div>'+
-        '<div class="row"><span>Fiches suivies</span><b>'+fiches+'</b></div></a>';
+      const r=await fetch(s.url+'/.netlify/functions/data');
+      const d=await r.json();
+      const st=siteStats(d);okN++;
+      T.n+=st.n;T.linked+=st.linked;T.tot+=st.tot;T.top3+=st.top3;T.alerts+=st.alerts;
+      tr.innerHTML='<td><div class="sname"><a href="'+s.url+'" target="_blank" rel="noopener">'+s.name+'</a></div><div class="sub">'+s.url.replace('https://','')+'</div></td>'+
+        '<td class="mono">'+st.n+'</td><td class="mono">'+st.linked+'</td>'+
+        '<td class="mono">'+st.tot+(st.dTot?'<span class="delta '+(st.dTot>0?'up':'warn')+'">'+(st.dTot>0?'+':'')+st.dTot+'</span>':'')+'</td>'+
+        '<td>'+(st.avg?'<span class="star">'+st.avg.toFixed(2)+' ★</span>':'—')+'</td>'+
+        '<td class="mono">'+st.top3+'</td><td class="mono'+(st.alerts?' warn':'')+'">'+(st.alerts||'0')+'</td>';
     }catch(e){
-      return '<div class="card"><h2>'+site.label+'</h2><div class="sub">'+site.url.replace('https://','')+'</div><div class="err">injoignable — site pas encore déployé en v3 ?</div></div>';
+      tr.innerHTML='<td><div class="sname"><a href="'+s.url+'" target="_blank" rel="noopener">'+s.name+'</a></div><div class="sub">'+s.url.replace('https://','')+'</div></td><td colspan="6"><span class="err">injoignable — site pas encore déployé ?</span></td>';
     }
-  }));
-  $('grid').innerHTML=cards.join('');
-  $('grand').textContent=grand||'—';
-  const gd=grand-grandPrev;
-  $('sDelta').textContent=loaded?((gd>=0?'+':'')+gd):'—';
-  $('sTop3').textContent=top3;
-  $('sFiches').textContent=nf;
-  $('sAlerts').textContent=alerts.length;
-  $('status').textContent=loaded+'/'+SITES.length+' trackers chargés · '+new Date().toLocaleString('fr-FR');
-  if(alerts.length){$('alertbox').style.display='block';$('alerts').innerHTML=alerts.join('<br>')}
-  else if(loaded){$('okbox').style.display='block'}
+    $('tb').appendChild(tr);
+    $('cAvis').textContent=T.tot;$('cFiches').textContent=T.n;$('cLinked').textContent=T.linked;$('cTop3').textContent=T.top3;$('cAlert').textContent=T.alerts;
+  }
+  $('msg').textContent=okN+' / '+SITES.length+' sites lus · '+new Date().toLocaleString('fr-FR');
+  $('go').disabled=false;
 }
 load();
-</script>
-</body>
-</html>
+</script></body></html>

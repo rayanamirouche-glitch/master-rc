@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#fafafa">
+<title>R.Consulting — COM 09/09</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --violet:#7C3AED; --fuchsia:#D946EF; --pink:#EC4899; --coral:#FB7185; --orange:#FB923C;
+  --emerald:#10B981; --teal:#14B8A6;
+  --ink:#2A1A40; --muted:#8B7BA0; --line:#EDE6F5;
+  --bg:#FBF6FF; --card:#FFFFFF; --star:#FBBF24;
+  --grad-head:linear-gradient(125deg,#7C3AED 0%,#D946EF 45%,#FB7185 100%);
+  --grad-cta:linear-gradient(120deg,#8B5CF6,#EC4899);
+  --shadow:0 10px 30px rgba(124,58,237,.12);
+  --shadow-sm:0 4px 14px rgba(124,58,237,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;overflow-x:hidden;padding-bottom:40px}
+.blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.35;z-index:0;pointer-events:none}
+.blob.b1{width:300px;height:300px;background:#D946EF;top:-80px;right:-60px}
+.blob.b2{width:260px;height:260px;background:#FB7185;bottom:10%;left:-90px}
+.blob.b3{width:220px;height:220px;background:#8B5CF6;bottom:-60px;right:-40px}
+header{position:sticky;top:0;z-index:20;background:var(--grad-head);color:#fff;padding:16px 20px;box-shadow:0 6px 24px rgba(124,58,237,.25)}
+.logo{font-size:1.05rem;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.logo small{font-size:.66rem;font-weight:500;opacity:.85;display:block;letter-spacing:.3px}
+.wrap{max-width:820px;margin:0 auto;padding:18px 16px;position:relative;z-index:1}
+.status{display:inline-block;font-size:.66rem;font-weight:800;padding:5px 12px;border-radius:30px;background:rgba(255,255,255,.22);backdrop-filter:blur(6px);color:#fff}
+.status-ok{background:rgba(16,185,129,.35)}
+.status-wait{background:rgba(251,146,60,.4)}
+.status-off{background:rgba(255,255,255,.25)}
+.trk{background:var(--card);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow);margin-bottom:18px}
+.trk-top{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:10px}
+.trk-top b{color:var(--violet);font-size:1.15rem}
+.trk-bar{height:10px;background:var(--line);border-radius:20px;overflow:hidden}
+.trk-fill{height:100%;background:var(--grad-cta);border-radius:20px;transition:width .35s ease}
+.grid{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 22px}
+.dot{width:34px;height:34px;border-radius:11px;border:none;background:#fff;color:var(--muted);font-size:.72rem;font-weight:800;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .12s}
+.dot:active{transform:scale(.9)}
+.dot.on{background:var(--grad-cta);color:#fff}
+.dot.pend{background:var(--orange);color:#fff}
+.sect{background:var(--card);border-radius:20px;padding:18px;margin-bottom:15px;box-shadow:var(--shadow-sm);border:1px solid var(--line);position:relative}
+.sect.done{opacity:.55}
+.sect.done::after{content:"";position:absolute;inset:0;border-radius:20px;border:2px dashed var(--emerald);pointer-events:none}
+.sect-num{position:absolute;top:-9px;left:16px;background:var(--grad-cta);color:#fff;font-size:.62rem;font-weight:800;padding:3px 10px;border-radius:20px}
+.sect-name{font-weight:800;font-size:.92rem;margin-bottom:2px;padding-top:4px}
+.sect-city{font-size:.72rem;color:var(--muted);margin-bottom:12px}
+.avis-txt{font-size:.9rem;line-height:1.6;color:#3B2B52;background:#FBF8FF;border-radius:14px;padding:13px 15px;margin-bottom:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:none;border-radius:24px;padding:9px 17px;font-size:.78rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .12s}
+.btn:active{transform:scale(.95)}
+.btn-copy{background:#F6F0FE;color:var(--violet)}
+.btn-copy.done{background:var(--emerald);color:#fff}
+.btn-maps{background:#EEF6FF;color:#2563EB}
+.btn-post{background:var(--grad-cta);color:#fff}
+.btn-undo{background:#FFF0F3;color:#e11d48}
+.foot{text-align:center;font-size:.7rem;color:var(--muted);padding:20px 0 8px}
+
+/* correspondance avec la structure existante */
+.header{position:sticky;top:0;z-index:20;background:var(--grad-head);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 24px rgba(124,58,237,.25)}
+.header .logo{width:36px;height:36px;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;backdrop-filter:blur(6px)}
+.h-t{flex:1;min-width:0}
+.h-name{font-weight:800;font-size:.98rem;letter-spacing:.3px}
+.h-sub{font-size:.7rem;opacity:.85}
+.badge{background:rgba(255,255,255,.22);border-radius:20px;padding:5px 13px;font-weight:800;font-size:.8rem;backdrop-filter:blur(6px)}
+.tracker{max-width:820px;margin:16px auto 0;padding:15px 18px;background:var(--card);border-radius:20px;box-shadow:var(--shadow);position:relative;z-index:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tracker-txt{font-weight:800;color:var(--violet);font-size:1.05rem;white-space:nowrap}
+.tracker-bar{flex:1;min-width:120px;height:10px;background:var(--line);border-radius:20px;overflow:hidden}
+.tracker-fill{height:100%;background:var(--grad-cta);border-radius:20px;transition:width .35s ease}
+.status{font-size:.66rem;font-weight:800;padding:5px 12px;border-radius:30px;background:#F6F0FE;color:var(--violet)}
+.status-ok{background:#E7FBF3;color:var(--emerald)}
+.status-wait{background:#FFF4E8;color:#C2410C}
+.status-off{background:#FFF0F3;color:#e11d48}
+.gridwrap{max-width:820px;margin:0 auto;padding:14px 16px 4px;position:relative;z-index:1}
+.grid{display:flex;flex-wrap:wrap;gap:7px}
+.g{width:36px;height:36px;border-radius:12px;border:none;background:#fff;color:var(--muted);font-weight:800;font-size:.7rem;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .12s}
+.g:active{transform:scale(.9)}
+.g.done{background:var(--grad-cta);color:#fff;box-shadow:0 4px 14px rgba(236,72,153,.35)}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+.g.pend{background:var(--orange);color:#fff}
+.gn{pointer-events:none}
+.sect-head{display:flex;align-items:center;gap:10px;cursor:pointer;padding-top:4px}
+.sect-info{flex:1;min-width:0}
+.sect-arr{color:var(--muted);font-size:1.1rem;transition:transform .2s}
+.sect.open .sect-arr{transform:rotate(90deg)}
+.sect-body{display:none;margin-top:12px}
+.sect.open .sect-body{display:block}
+.avis-bar{display:flex;gap:8px;flex-wrap:wrap}
+.donetag{display:none;background:var(--emerald);color:#fff;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:20px}
+.sect.done .donetag{display:block}
+.pendtag{display:none;background:var(--orange);color:#fff;font-size:.6rem;font-weight:800;padding:4px 10px;border-radius:20px}
+.sect.pend .pendtag{display:block}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:11px 22px;border-radius:30px;font-size:.8rem;font-weight:700;opacity:0;transition:.25s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style></head><body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div class="header"><div class="logo">R.</div>
+<div class="h-t"><div class="h-name">COM 09/09</div><div class="h-sub">David Roof 3 · Christian 3 (2 par page) · Jeremy (5 dernières)</div></div>
+<div class="badge">22</div></div>
+<div class="tracker">
+<div class="tracker-txt" id="trkTxt">0 / 22</div>
+<div class="tracker-bar"><div class="tracker-fill" id="trkFill" style="width:0%"></div></div>
+<span class="status" id="dbStatus">⏳</span>
+</div>
+<div class="gridwrap"><div class="grid"><button class="g" id="g0" onclick="jumpTo(0)"><span class="gn">01</span></button><button class="g" id="g1" onclick="jumpTo(1)"><span class="gn">02</span></button><button class="g" id="g2" onclick="jumpTo(2)"><span class="gn">03</span></button><button class="g" id="g3" onclick="jumpTo(3)"><span class="gn">04</span></button><button class="g" id="g4" onclick="jumpTo(4)"><span class="gn">05</span></button><button class="g" id="g5" onclick="jumpTo(5)"><span class="gn">06</span></button><button class="g" id="g6" onclick="jumpTo(6)"><span class="gn">07</span></button><button class="g" id="g7" onclick="jumpTo(7)"><span class="gn">08</span></button><button class="g" id="g8" onclick="jumpTo(8)"><span class="gn">09</span></button><button class="g" id="g9" onclick="jumpTo(9)"><span class="gn">10</span></button><button class="g" id="g10" onclick="jumpTo(10)"><span class="gn">11</span></button><button class="g" id="g11" onclick="jumpTo(11)"><span class="gn">12</span></button><button class="g" id="g12" onclick="jumpTo(12)"><span class="gn">13</span></button><button class="g" id="g13" onclick="jumpTo(13)"><span class="gn">14</span></button><button class="g" id="g14" onclick="jumpTo(14)"><span class="gn">15</span></button><button class="g" id="g15" onclick="jumpTo(15)"><span class="gn">16</span></button><button class="g" id="g16" onclick="jumpTo(16)"><span class="gn">17</span></button><button class="g" id="g17" onclick="jumpTo(17)"><span class="gn">18</span></button><button class="g" id="g18" onclick="jumpTo(18)"><span class="gn">19</span></button><button class="g" id="g19" onclick="jumpTo(19)"><span class="gn">20</span></button><button class="g" id="g20" onclick="jumpTo(20)"><span class="gn">21</span></button><button class="g" id="g21" onclick="jumpTo(21)"><span class="gn">22</span></button></div></div>
+<div class="wrap"><div class="sect" id="s0"><div class="sect-head" onclick="document.getElementById('s0').classList.toggle('open')"><div class="sect-num">01</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiture Ixelles - Pro Toiturier 🇧🇪</div><div class="sect-city">Ixelles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Avec un bébé de deux mois on ne voulait pas d&#x27;un chantier qui traîne. La toiture de notre maison à Ixelles a été refaite en quatre jours, le toiturier prévenait chaque matin de l&#x27;heure d&#x27;arrivée et ils ont fini un jour plus tôt que prévu. Le devis a été respecté.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(0)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/GconZgHqdGmNxhfe8" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(0)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(0)">Annuler</button></div></div></div><div class="sect" id="s1"><div class="sect-head" onclick="document.getElementById('s1').classList.toggle('open')"><div class="sect-num">02</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Woluwe-Saint-Pierre 🇧🇪</div><div class="sect-city">Woluwe-Saint-Pierre</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Toiture bâchée le soir même chez nous à Woluwe-Saint-Pierre</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(1)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/waoify9zviVUMPNb9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(1)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(1)">Annuler</button></div></div></div><div class="sect" id="s2"><div class="sect-head" onclick="document.getElementById('s2').classList.toggle('open')"><div class="sect-num">03</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Woluwe-Saint-Lambert 🇧🇪</div><div class="sect-city">Woluwe-Saint-Lambert</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Syndic d&#x27;un petit immeuble à Woluwe-Saint-Lambert, on avait déjà eu deux toituriers qui ne rappelaient jamais. Celui-ci rappelle, vient à l&#x27;heure, et la facture est lisible. On le garde.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(2)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/ey33Y2HnMqAhzV6b6" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(2)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(2)">Annuler</button></div></div></div><div class="sect" id="s3"><div class="sect-head" onclick="document.getElementById('s3').classList.toggle('open')"><div class="sect-num">04</div><div class="sect-info"><div class="sect-name">Christian 3 · Toiturier Rixensart 🇧🇪</div><div class="sect-city">Rixensart</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Toit réparé à Rixensart, merci</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(3)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/8PdxBwVPgnCdwHbv7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(3)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(3)">Annuler</button></div></div></div><div class="sect" id="s4"><div class="sect-head" onclick="document.getElementById('s4').classList.toggle('open')"><div class="sect-num">05</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Watermael-Boitsfort 🇧🇪</div><div class="sect-city">Watermael-Boitsfort</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Le toiturier m&#x27;a rappelé dans l&#x27;heure pour ma gouttière à Watermael-Boitsfort, réparée le surlendemain.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(4)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/h21r4TZUNNRL17kM9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(4)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(4)">Annuler</button></div></div></div><div class="sect" id="s5"><div class="sect-head" onclick="document.getElementById('s5').classList.toggle('open')"><div class="sect-num">06</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Uccle 🇧🇪</div><div class="sect-city">Uccle</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Dakwerker uit Ukkel gebeld voor een lek boven de keuken, de dag erna was het hersteld. Correcte prijs.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(5)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/ksZ9Z48SWUoHHBej7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(5)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(5)">Annuler</button></div></div></div><div class="sect" id="s6"><div class="sect-head" onclick="document.getElementById('s6').classList.toggle('open')"><div class="sect-num">07</div><div class="sect-info"><div class="sect-name">David Roof Père Et Fils SRL 🇧🇪</div><div class="sect-city">Bruxelles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Parfait pour ma toiture à Bruxelles</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(6)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/WnHntU46HHMundXt9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(6)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(6)">Annuler</button></div></div></div><div class="sect" id="s7"><div class="sect-head" onclick="document.getElementById('s7').classList.toggle('open')"><div class="sect-num">08</div><div class="sect-info"><div class="sect-name">Jeremy · Le roi de la toiture : couvreur Beaulieu sur mer</div><div class="sect-city">Beaulieu-sur-Mer</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Juste un raccord de zinc à refaire sur mon toit à Beaulieu-sur-Mer, le couvreur est passé entre deux chantiers et ne ma pas facturé une fortune.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(7)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/To94X5AViJpHEyNdA" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(7)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(7)">Annuler</button></div></div></div><div class="sect" id="s8"><div class="sect-head" onclick="document.getElementById('s8').classList.toggle('open')"><div class="sect-num">09</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Waterloo 🇧🇪</div><div class="sect-city">Waterloo</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Nous sommes retraités et notre toiture à Waterloo avait besoin d&#x27;une isolation depuis longtemps. Le toiturier est passé deux fois avant les travaux, une fois pour mesurer et une fois pour nous expliquer les matériaux. Le chantier a duré trois jours et ils ont tout remis en ordre dans le grenier. Nous sommes satisfaits.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(8)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/YaqiwQzpcrfJKXmG9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(8)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(8)">Annuler</button></div></div></div><div class="sect" id="s9"><div class="sect-head" onclick="document.getElementById('s9').classList.toggle('open')"><div class="sect-num">10</div><div class="sect-info"><div class="sect-name">Jeremy · Brad Toiture Couvreur Saint-Germain-en-Laye</div><div class="sect-city">Saint-Germain-en-Laye</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Devis reçu le soir même de la visite pour refaire les gouttières de notre maison à Saint-Germain-en-Laye, prix tenu, chantier en deux jours. Bon couvreur.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(9)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/TFGqtvX1bQwqjPZf7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(9)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(9)">Annuler</button></div></div></div><div class="sect" id="s10"><div class="sect-head" onclick="document.getElementById('s10').classList.toggle('open')"><div class="sect-num">11</div><div class="sect-info"><div class="sect-name">David Roof Père Et Fils SRL 🇧🇪</div><div class="sect-city">Bruxelles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">On a acheté une maison à Uccle en mai, l&#x27;expert nous avait signalé la toiture. On a cherché un couvreur à Bruxelles, David Roof est venu voir gratuitement, a chiffré, a fait le boulot en une semaine. On dort tranquilles.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(10)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/WnHntU46HHMundXt9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(10)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(10)">Annuler</button></div></div></div><div class="sect" id="s11"><div class="sect-head" onclick="document.getElementById('s11').classList.toggle('open')"><div class="sect-num">12</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Uccle 🇧🇪</div><div class="sect-city">Uccle</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Toiturier sérieux à Uccle</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(11)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/ksZ9Z48SWUoHHBej7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(11)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(11)">Annuler</button></div></div></div><div class="sect" id="s12"><div class="sect-head" onclick="document.getElementById('s12').classList.toggle('open')"><div class="sect-num">13</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Woluwe-Saint-Lambert 🇧🇪</div><div class="sect-city">Woluwe-Saint-Lambert</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Franchement contents de la corniche refaite à Woluwe-Saint-Lambert</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(12)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/ey33Y2HnMqAhzV6b6" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(12)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(12)">Annuler</button></div></div></div><div class="sect" id="s13"><div class="sect-head" onclick="document.getElementById('s13').classList.toggle('open')"><div class="sect-num">14</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Woluwe-Saint-Pierre 🇧🇪</div><div class="sect-city">Woluwe-Saint-Pierre</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Appartement au dernier étage à Woluwe-Saint-Pierre, l&#x27;eau passait par le velux. Le toiturier a refait le joint et vérifié le reste, pas de supplément.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(13)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/waoify9zviVUMPNb9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(13)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(13)">Annuler</button></div></div></div><div class="sect" id="s14"><div class="sect-head" onclick="document.getElementById('s14').classList.toggle('open')"><div class="sect-num">15</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiture Ixelles - Pro Toiturier 🇧🇪</div><div class="sect-city">Ixelles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Pas une trace sur le trottoir après la corniche à Ixelles, chapeau au toiturier</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(14)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/GconZgHqdGmNxhfe8" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(14)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(14)">Annuler</button></div></div></div><div class="sect" id="s15"><div class="sect-head" onclick="document.getElementById('s15').classList.toggle('open')"><div class="sect-num">16</div><div class="sect-info"><div class="sect-name">Jeremy · Versailles Batipro expert en rénovation</div><div class="sect-city">Versailles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Notre pavillon à Versailles a été rénové de la toiture au rez-de-chaussée. Le chef de chantier passait tous les deux jours, répondait aux questions et a géré le petit imprévu de la charpente sans nous faire attendre. Les délais annoncés ont été tenus à une semaine près, ce qui pour un chantier de cette taille est correct.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(15)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/8ep8ncJif1xckh9q9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(15)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(15)">Annuler</button></div></div></div><div class="sect" id="s16"><div class="sect-head" onclick="document.getElementById('s16').classList.toggle('open')"><div class="sect-num">17</div><div class="sect-info"><div class="sect-name">Jeremy · 360 toiture charpente couverture grasse</div><div class="sect-city">Grasse</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Charpente vérifiée et deux chevrons changés sur notre mas à Grasse, boulot propre.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(16)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/yrMW9cdbQpqxcSG4A" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(16)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(16)">Annuler</button></div></div></div><div class="sect" id="s17"><div class="sect-head" onclick="document.getElementById('s17').classList.toggle('open')"><div class="sect-num">18</div><div class="sect-info"><div class="sect-name">Jeremy · Ma toiture neuve Cannes toit couvreur</div><div class="sect-city">Cannes</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">couvreur au top sur cannes</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(17)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/CXEs3EGsRJAHaS7N7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(17)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(17)">Annuler</button></div></div></div><div class="sect" id="s18"><div class="sect-head" onclick="document.getElementById('s18').classList.toggle('open')"><div class="sect-num">19</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Waterloo 🇧🇪</div><div class="sect-city">Waterloo</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Deux jours pour la corniche de ma maison à Waterloo, comme annoncé au devis.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(18)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/YaqiwQzpcrfJKXmG9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(18)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(18)">Annuler</button></div></div></div><div class="sect" id="s19"><div class="sect-head" onclick="document.getElementById('s19').classList.toggle('open')"><div class="sect-num">20</div><div class="sect-info"><div class="sect-name">Christian 3 · Toiturier Rixensart 🇧🇪</div><div class="sect-city">Rixensart</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">Un solin et trois tuiles sur la maison qu&#x27;on vient d&#x27;acheter à Rixensart, le toiturier a chiffré sur place, moins cher que ce que je craignais.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(19)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/8PdxBwVPgnCdwHbv7" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(19)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(19)">Annuler</button></div></div></div><div class="sect" id="s20"><div class="sect-head" onclick="document.getElementById('s20').classList.toggle('open')"><div class="sect-num">21</div><div class="sect-info"><div class="sect-name">David Roof Père Et Fils SRL 🇧🇪</div><div class="sect-city">Bruxelles</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">il pleut plus dans mon salon a ixelles, merci le couvreur de bruxelles</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(20)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/WnHntU46HHMundXt9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(20)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(20)">Annuler</button></div></div></div><div class="sect" id="s21"><div class="sect-head" onclick="document.getElementById('s21').classList.toggle('open')"><div class="sect-num">22</div><div class="sect-info"><div class="sect-name">Christian 3 · Pro Toiturier Watermael-Boitsfort 🇧🇪</div><div class="sect-city">Watermael-Boitsfort</div></div><span class="pendtag">à envoyer</span><div class="donetag">POSTÉ ✓</div><div class="sect-arr">▸</div></div><div class="sect-body"><div class="avis-txt">On avait de la mousse partout sur le toit à Watermael-Boitsfort. Du coup jai appelé, nettoyé et traité en une journée, propre depuis la rue.</div><div class="avis-bar"><button class="btn btn-copy" onclick="copyRev(21)">Copier</button><a class="btn btn-maps" href="https://maps.app.goo.gl/h21r4TZUNNRL17kM9" target="_blank" rel="noopener">Maps ↗</a><button class="btn btn-post" onclick="markDone(21)">Posté ✓</button><button class="btn btn-undo" onclick="undoDone(21)">Annuler</button></div></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+
+var firebaseConfig={apiKey:"AIzaSyDhb-_GwagZ8UgsWgnH8Uu-gki2_gMzR1I",authDomain:"avis-tracker.firebaseapp.com",databaseURL:"https://avis-tracker-default-rtdb.europe-west1.firebasedatabase.app",projectId:"avis-tracker",storageBucket:"avis-tracker.firebasestorage.app",messagingSenderId:"766808289127",appId:"1:766808289127:web:976388f6623221f0e3c9c2",measurementId:"G-BX7PV062NG"};
+var DB_KEY='com_0909_v2';
+var AVIS=[{"id": "c1_0", "f": "Christian 3 · Pro Toiture Ixelles - Pro Toiturier 🇧🇪", "c": "Ixelles", "m": "GconZgHqdGmNxhfe8", "t": "Avec un bébé de deux mois on ne voulait pas d'un chantier qui traîne. La toiture de notre maison à Ixelles a été refaite en quatre jours, le toiturier prévenait chaque matin de l'heure d'arrivée et ils ont fini un jour plus tôt que prévu. Le devis a été respecté."}, {"id": "c2_0", "f": "Christian 3 · Pro Toiturier Woluwe-Saint-Pierre 🇧🇪", "c": "Woluwe-Saint-Pierre", "m": "waoify9zviVUMPNb9", "t": "Toiture bâchée le soir même chez nous à Woluwe-Saint-Pierre"}, {"id": "c3_0", "f": "Christian 3 · Pro Toiturier Woluwe-Saint-Lambert 🇧🇪", "c": "Woluwe-Saint-Lambert", "m": "ey33Y2HnMqAhzV6b6", "t": "Syndic d'un petit immeuble à Woluwe-Saint-Lambert, on avait déjà eu deux toituriers qui ne rappelaient jamais. Celui-ci rappelle, vient à l'heure, et la facture est lisible. On le garde."}, {"id": "c4_0", "f": "Christian 3 · Toiturier Rixensart 🇧🇪", "c": "Rixensart", "m": "8PdxBwVPgnCdwHbv7", "t": "Toit réparé à Rixensart, merci"}, {"id": "c5_0", "f": "Christian 3 · Pro Toiturier Watermael-Boitsfort 🇧🇪", "c": "Watermael-Boitsfort", "m": "h21r4TZUNNRL17kM9", "t": "Le toiturier m'a rappelé dans l'heure pour ma gouttière à Watermael-Boitsfort, réparée le surlendemain."}, {"id": "c6_0", "f": "Christian 3 · Pro Toiturier Uccle 🇧🇪", "c": "Uccle", "m": "ksZ9Z48SWUoHHBej7", "t": "Dakwerker uit Ukkel gebeld voor een lek boven de keuken, de dag erna was het hersteld. Correcte prijs."}, {"id": "c7_0", "f": "David Roof Père Et Fils SRL 🇧🇪", "c": "Bruxelles", "m": "WnHntU46HHMundXt9", "t": "Parfait pour ma toiture à Bruxelles"}, {"id": "c8_0", "f": "Jeremy · Le roi de la toiture : couvreur Beaulieu sur mer", "c": "Beaulieu-sur-Mer", "m": "To94X5AViJpHEyNdA", "t": "Juste un raccord de zinc à refaire sur mon toit à Beaulieu-sur-Mer, le couvreur est passé entre deux chantiers et ne ma pas facturé une fortune."}, {"id": "c9_0", "f": "Christian 3 · Pro Toiturier Waterloo 🇧🇪", "c": "Waterloo", "m": "YaqiwQzpcrfJKXmG9", "t": "Nous sommes retraités et notre toiture à Waterloo avait besoin d'une isolation depuis longtemps. Le toiturier est passé deux fois avant les travaux, une fois pour mesurer et une fois pour nous expliquer les matériaux. Le chantier a duré trois jours et ils ont tout remis en ordre dans le grenier. Nous sommes satisfaits."}, {"id": "c10_0", "f": "Jeremy · Brad Toiture Couvreur Saint-Germain-en-Laye", "c": "Saint-Germain-en-Laye", "m": "TFGqtvX1bQwqjPZf7", "t": "Devis reçu le soir même de la visite pour refaire les gouttières de notre maison à Saint-Germain-en-Laye, prix tenu, chantier en deux jours. Bon couvreur."}, {"id": "c11_0", "f": "David Roof Père Et Fils SRL 🇧🇪", "c": "Bruxelles", "m": "WnHntU46HHMundXt9", "t": "On a acheté une maison à Uccle en mai, l'expert nous avait signalé la toiture. On a cherché un couvreur à Bruxelles, David Roof est venu voir gratuitement, a chiffré, a fait le boulot en une semaine. On dort tranquilles."}, {"id": "c12_0", "f": "Christian 3 · Pro Toiturier Uccle 🇧🇪", "c": "Uccle", "m": "ksZ9Z48SWUoHHBej7", "t": "Toiturier sérieux à Uccle"}, {"id": "c13_0", "f": "Christian 3 · Pro Toiturier Woluwe-Saint-Lambert 🇧🇪", "c": "Woluwe-Saint-Lambert", "m": "ey33Y2HnMqAhzV6b6", "t": "Franchement contents de la corniche refaite à Woluwe-Saint-Lambert"}, {"id": "c14_0", "f": "Christian 3 · Pro Toiturier Woluwe-Saint-Pierre 🇧🇪", "c": "Woluwe-Saint-Pierre", "m": "waoify9zviVUMPNb9", "t": "Appartement au dernier étage à Woluwe-Saint-Pierre, l'eau passait par le velux. Le toiturier a refait le joint et vérifié le reste, pas de supplément."}, {"id": "c15_0", "f": "Christian 3 · Pro Toiture Ixelles - Pro Toiturier 🇧🇪", "c": "Ixelles", "m": "GconZgHqdGmNxhfe8", "t": "Pas une trace sur le trottoir après la corniche à Ixelles, chapeau au toiturier"}, {"id": "c16_0", "f": "Jeremy · Versailles Batipro expert en rénovation", "c": "Versailles", "m": "8ep8ncJif1xckh9q9", "t": "Notre pavillon à Versailles a été rénové de la toiture au rez-de-chaussée. Le chef de chantier passait tous les deux jours, répondait aux questions et a géré le petit imprévu de la charpente sans nous faire attendre. Les délais annoncés ont été tenus à une semaine près, ce qui pour un chantier de cette taille est correct."}, {"id": "c17_0", "f": "Jeremy · 360 toiture charpente couverture grasse", "c": "Grasse", "m": "yrMW9cdbQpqxcSG4A", "t": "Charpente vérifiée et deux chevrons changés sur notre mas à Grasse, boulot propre."}, {"id": "c18_0", "f": "Jeremy · Ma toiture neuve Cannes toit couvreur", "c": "Cannes", "m": "CXEs3EGsRJAHaS7N7", "t": "couvreur au top sur cannes"}, {"id": "c19_0", "f": "Christian 3 · Pro Toiturier Waterloo 🇧🇪", "c": "Waterloo", "m": "YaqiwQzpcrfJKXmG9", "t": "Deux jours pour la corniche de ma maison à Waterloo, comme annoncé au devis."}, {"id": "c20_0", "f": "Christian 3 · Toiturier Rixensart 🇧🇪", "c": "Rixensart", "m": "8PdxBwVPgnCdwHbv7", "t": "Un solin et trois tuiles sur la maison qu'on vient d'acheter à Rixensart, le toiturier a chiffré sur place, moins cher que ce que je craignais."}, {"id": "c21_0", "f": "David Roof Père Et Fils SRL 🇧🇪", "c": "Bruxelles", "m": "WnHntU46HHMundXt9", "t": "il pleut plus dans mon salon a ixelles, merci le couvreur de bruxelles"}, {"id": "c22_0", "f": "Christian 3 · Pro Toiturier Watermael-Boitsfort 🇧🇪", "c": "Watermael-Boitsfort", "m": "h21r4TZUNNRL17kM9", "t": "On avait de la mousse partout sur le toit à Watermael-Boitsfort. Du coup jai appelé, nettoyé et traité en une journée, propre depuis la rue."}];
+var TOTAL=AVIS.length;
+
+var remote=new Set();      // ce que le serveur confirme
+var addQ=new Set();        // postés localement, pas encore confirmés
+var delQ=new Set();        // annulés localement, pas encore confirmés
+var db=null, gotSnapshot=false;
+
+function qKey(){return DB_KEY+'_queue'}
+function saveQ(){try{localStorage.setItem(qKey(),JSON.stringify({a:[].concat(Array.from(addQ)),d:[].concat(Array.from(delQ))}))}catch(e){}}
+function loadQ(){try{var o=JSON.parse(localStorage.getItem(qKey())||'{}');
+  (o.a||[]).forEach(function(x){addQ.add(x)});(o.d||[]).forEach(function(x){delQ.add(x)})}catch(e){}}
+function saveMirror(){try{localStorage.setItem(DB_KEY,JSON.stringify(Array.from(view())))}catch(e){}}
+function loadMirror(){try{(JSON.parse(localStorage.getItem(DB_KEY)||'[]')).forEach(function(x){remote.add(x)})}catch(e){}}
+
+// état affiché = serveur + en attente d'envoi - annulations en attente
+function view(){
+  var s=new Set();
+  remote.forEach(function(x){s.add(x)});
+  addQ.forEach(function(x){s.add(x)});
+  delQ.forEach(function(x){s.delete(x)});
+  return s;
+}
+function isDone(id){return view().has(id)}
+
+function setStatus(){
+  var el=document.getElementById('dbStatus');if(!el)return;
+  var pend=addQ.size+delQ.size;
+  if(pend>0&&libAbsente()){el.textContent='⚠ '+pend+' en attente — reconnexion…';el.className='status status-wait';return}
+  if(pend>0){el.textContent='⏳ '+pend+' à envoyer';el.className='status status-wait';return}
+  if(!db||!gotSnapshot){el.textContent=navigator.onLine?'🟠 reconnexion…':'🟠 hors ligne';el.className='status status-off';return}
+  el.textContent='🟢 sync';el.className='status status-ok';
+}
+
+function flush(){
+  if(!db){connecte();if(!db)return}   // page ouverte hors ligne : on retente la connexion
+  Array.from(addQ).forEach(function(id){
+    db.ref(DB_KEY+'/'+id).set(true).then(function(){}).catch(function(){});
+  });
+  Array.from(delQ).forEach(function(id){
+    db.ref(DB_KEY+'/'+id).remove().then(function(){}).catch(function(){});
+  });
+}
+
+// Si la page a été ouverte sans réseau, la librairie Firebase (CDN) n'a pas été
+// téléchargée : rien ne peut partir. On NE recharge PAS automatiquement — un
+// rechargement en boucle serait pire que le mal. On le dit clairement à l'écran,
+// et la file d'attente reste intacte dans le stockage local en attendant.
+function libAbsente(){return typeof firebase==='undefined'}
+// Si le CDN Firebase n'a pas répondu au chargement de la page (réseau mobile
+// instable), on recharge la librairie nous-mêmes, sans recharger la page.
+var _libEnCours=false;
+function chargerLib(){
+  if(!libAbsente()||_libEnCours||!navigator.onLine)return;
+  _libEnCours=true;
+  var urls=['https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js'];
+  (function suivant(i){
+    if(i>=urls.length){_libEnCours=false;connecte();setStatus();return}
+    var s=document.createElement('script');s.src=urls[i];
+    s.onload=function(){suivant(i+1)};
+    s.onerror=function(){_libEnCours=false};
+    document.head.appendChild(s);
+  })(0);
+}
+function connecte(){
+  if(db)return true;
+  if(libAbsente()){chargerLib();return false}
+  try{
+    if(!firebase.apps||!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+    db=firebase.database();
+    ecoute();
+    setStatus();
+    return true;
+  }catch(e){db=null;return false}
+}
+function ecoute(){
+  db.ref(DB_KEY).on('value',function(snap){
+    var v=snap.val()||{};
+    var srv=new Set();
+    Object.keys(v).forEach(function(k){if(/^c\d+_\d+$/.test(k)&&v[k])srv.add(k)});
+    // une écriture est confirmée quand le serveur la reflète : on la sort de la file
+    Array.from(addQ).forEach(function(id){if(srv.has(id))addQ.delete(id)});
+    Array.from(delQ).forEach(function(id){if(!srv.has(id))delQ.delete(id)});
+    remote=srv;gotSnapshot=true;
+    saveQ();saveMirror();render();setStatus();
+    if(addQ.size+delQ.size>0)flush();   // renvoie ce qui n'est pas encore passé
+  },function(){gotSnapshot=false;render();setStatus()});
+}
+
+try{
+  loadQ();loadMirror();
+  connecte();
+  setInterval(function(){if(!db)connecte();if(addQ.size+delQ.size>0)flush();setStatus()},8000);
+  window.addEventListener('online',function(){connecte();flush();setStatus()});
+  // renvoi immédiat de ce qui restait de la session précédente,
+  // sans attendre le premier snapshot ni les 15 secondes du timer
+  if(addQ.size+delQ.size>0){flush();setTimeout(flush,1500);setTimeout(flush,5000)}
+  // sur téléphone les minuteurs sont gelés quand l'onglet passe en arrière-plan :
+  // on renvoie dès qu'il redevient visible
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden)return;
+    if(!db)connecte();
+    if(addQ.size+delQ.size>0)flush();
+    setStatus();
+  });
+  window.addEventListener('focus',function(){if(addQ.size+delQ.size>0)flush()});
+  window.addEventListener('pageshow',function(){if(addQ.size+delQ.size>0)flush()});
+}catch(e){loadQ();loadMirror();}
+
+// on prévient avant de fermer si des avis n'ont pas encore été transmis.
+// ils ne sont pas perdus (ils repartent à la réouverture) mais autant le savoir.
+window.addEventListener('beforeunload',function(e){
+  if(addQ.size+delQ.size>0){e.preventDefault();e.returnValue='';return ''}
+});
+
+function render(){
+  var v=view(),n=v.size;
+  document.getElementById('trkTxt').textContent=n+' / '+TOTAL;
+  document.getElementById('trkFill').style.width=(n/TOTAL*100)+'%';
+  AVIS.forEach(function(a,i){
+    var d=v.has(a.id),p=addQ.has(a.id)||delQ.has(a.id);
+    var g=document.getElementById('g'+i);
+    if(g){var was=g.classList.contains('done');
+      g.classList.toggle('done',d);g.classList.toggle('pend',p);
+      if(d&&!was)g.style.animation='pop .35s cubic-bezier(.34,1.56,.64,1)'}
+    var s=document.getElementById('s'+i);
+    if(s){s.classList.toggle('done',d);s.classList.toggle('pend',p)}
+  });
+  setStatus();
+}
+function jumpTo(i){
+  var s=document.getElementById('s'+i);
+  if(s){s.classList.add('open');s.scrollIntoView({behavior:'smooth',block:'center'})}
+}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},1600)}
+function copyRev(i,txt){txt=AVIS[i].t;
+  function fb(){var x=document.createElement('textarea');x.value=txt;document.body.appendChild(x);
+    x.select();try{document.execCommand('copy')}catch(e){}x.remove()}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).catch(fb)}else{fb()}
+  toast('Copié ✓');
+}
+function markDone(i){
+  var id=AVIS[i].id;
+  if(view().has(id))return;
+  delQ.delete(id);addQ.add(id);
+  saveQ();saveMirror();render();
+  if(navigator.vibrate)navigator.vibrate(12);
+  flush();
+}
+function undoDone(i){
+  var id=AVIS[i].id;
+  if(!view().has(id))return;
+  addQ.delete(id);delQ.add(id);
+  saveQ();saveMirror();render();toast('Remis à faire');
+  flush();
+}
+render();setStatus();
+
+</script></body></html>

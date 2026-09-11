@@ -1,109 +1,444 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Master R.Consulting — Parc GBP</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#111318;--muted:#9a9ea8;--line:#e2e3e6;--gold:#f59e0b;--terra:#c2552b;--ok:#0e9f6e;--bad:#dc2626}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#fafafa;color:var(--ink);padding-bottom:50px}
-.header{position:sticky;top:0;z-index:10;background:rgba(250,250,250,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:14px 18px;display:flex;align-items:center;gap:12px}
-.logo{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem}
-.h-t{flex:1}.h-name{font-weight:800;font-size:.95rem}
-.h-sub{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted)}
-.btn{font-family:'DM Mono',monospace;font-size:.75rem;font-weight:700;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;background:var(--ink);color:#fff}
-.btn:disabled{opacity:.5}
-.wrap{max-width:980px;margin:0 auto;padding:16px 14px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}
-.card .lbl{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
-.card .val{font-size:1.7rem;font-weight:900;letter-spacing:-1px;margin-top:4px}
-.card.main .val{background:linear-gradient(135deg,var(--terra),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-.msg{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin:8px 2px}
-table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
-thead th{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);background:#fcfcfd}
-tbody td{padding:12px 14px;border-bottom:1px solid var(--line)}
-tbody tr:last-child td{border-bottom:none}
-tbody tr:hover{background:#f9f9fb}
-.sname{font-weight:800;font-size:.85rem}.sname a{color:var(--ink);text-decoration:none;border-bottom:1px dashed var(--terra)}
-.sub{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);margin-top:2px}
-.mono{font-family:'DM Mono',monospace;font-weight:800}
-.delta{font-family:'DM Mono',monospace;font-size:.62rem;font-weight:700;margin-left:5px}
-.up{color:var(--ok)}.warn{color:var(--bad)}
-.star{color:var(--gold);font-weight:800}
-.err{color:var(--bad);font-family:'DM Mono',monospace;font-size:.62rem}
-</style></head><body>
-<div class="header"><div class="logo">R.</div>
-<div class="h-t"><div class="h-name">Master — Parc GBP R.Consulting</div><div class="h-sub" id="hsub">tous les trackers · agrégation en direct</div></div>
-<button class="btn" id="go" onclick="load()">↻ Actualiser</button></div>
-<div class="wrap">
-<div class="cards">
-<div class="card main"><div class="lbl">Avis parc</div><div class="val" id="cAvis">—</div></div>
-<div class="card"><div class="lbl">Fiches suivies</div><div class="val" id="cFiches">—</div></div>
-<div class="card"><div class="lbl">Liées</div><div class="val" id="cLinked">—</div></div>
-<div class="card"><div class="lbl">Top 3 local</div><div class="val" id="cTop3">—</div></div>
-<div class="card"><div class="lbl">Alertes ⚠</div><div class="val" id="cAlert">—</div></div>
-</div>
-<div class="msg" id="msg">Clique sur Actualiser</div>
-<table><thead><tr><th>Site</th><th>Fiches</th><th>Liées</th><th>Avis</th><th>⭐ moy</th><th>Top 3</th><th>Alertes</th></tr></thead>
-<tbody id="tb"></tbody></table>
-</div>
-<script>
-const SITES=[
- {name:'Michel · Var/Nice',url:'https://trackermichel.netlify.app'},
- {name:'Antoine · Haute-Savoie + Var',url:'https://trackerantoine.netlify.app'},
- {name:'Jérémy · 06 + IDF',url:'https://trackerjeremy.netlify.app'},
- {name:'Christian 1 · P1 Belgique',url:'https://trackerp1belgique.netlify.app'},
- {name:'Christian 2 · P2 Belgique',url:'https://trackergmb.netlify.app'},
- {name:'Christian 3 · Bruxelles/Brabant',url:'https://trackerchristian-3.netlify.app'},
- {name:'Sacha · Belgique',url:'https://trackersacha.netlify.app'},
- {name:'Logan · Hérault',url:'https://trackerlogan.netlify.app'},
- {name:'Mika · Clim, PAC & dératisation IDF',url:'https://trackermika.netlify.app'},
- {name:'Timmy · Rhône-Alpes',url:'https://trackertimmy.netlify.app'},
- {name:'Sander · Est-Var',url:'https://trackersander.netlify.app'},
- {name:'David · Alsace',url:'https://trackerdavidd.netlify.app'},
-];
-const $=id=>document.getElementById(id);
-const dates=o=>Object.keys(o||{}).sort();
-function siteStats(d){
-  const av=d.avis||{},rk=d.rank||{},ids=d.ids||{};
-  const ds=dates(av);const now=av[ds[ds.length-1]]||{},prev=av[ds[ds.length-2]]||{};
-  const rds=dates(rk);const rnow=rk[rds[rds.length-1]]||{};
-  let tot=0,totPrev=0,top3=0,alerts=0,linked=0,notes=[];
-  for(const f of (d.fiches||[])){
-    if(ids[f.name])linked++;
-    const a=now[f.name],p=prev[f.name];
-    if(a&&a.n!=null){tot+=a.n;if(a.r)notes.push(a.r)}
-    if(p&&p.n!=null)totPrev+=p.n;
-    if(a&&p&&a.n<p.n)alerts++;
-    if(!ids[f.name])alerts++;
-    const pos=rnow[f.name];if(pos!=null&&pos<=3)top3++;
-  }
-  const avg=notes.length?(notes.reduce((x,y)=>x+y,0)/notes.length):null;
-  return{n:(d.fiches||[]).length,linked,tot,dTot:totPrev?tot-totPrev:0,avg,top3,alerts};
-}
-async function load(){
-  $('go').disabled=true;$('tb').innerHTML='';
-  let T={n:0,linked:0,tot:0,top3:0,alerts:0};let okN=0;
-  for(const s of SITES){
-    $('msg').textContent='Lecture '+s.name+'…';
-    const tr=document.createElement('tr');
-    try{
-      const r=await fetch(s.url+'/.netlify/functions/data');
-      const d=await r.json();
-      const st=siteStats(d);okN++;
-      T.n+=st.n;T.linked+=st.linked;T.tot+=st.tot;T.top3+=st.top3;T.alerts+=st.alerts;
-      tr.innerHTML='<td><div class="sname"><a href="'+s.url+'" target="_blank" rel="noopener">'+s.name+'</a></div><div class="sub">'+s.url.replace('https://','')+'</div></td>'+
-        '<td class="mono">'+st.n+'</td><td class="mono">'+st.linked+'</td>'+
-        '<td class="mono">'+st.tot+(st.dTot?'<span class="delta '+(st.dTot>0?'up':'warn')+'">'+(st.dTot>0?'+':'')+st.dTot+'</span>':'')+'</td>'+
-        '<td>'+(st.avg?'<span class="star">'+st.avg.toFixed(2)+' ★</span>':'—')+'</td>'+
-        '<td class="mono">'+st.top3+'</td><td class="mono'+(st.alerts?' warn':'')+'">'+(st.alerts||'0')+'</td>';
-    }catch(e){
-      tr.innerHTML='<td><div class="sname"><a href="'+s.url+'" target="_blank" rel="noopener">'+s.name+'</a></div><div class="sub">'+s.url.replace('https://','')+'</div></td><td colspan="6"><span class="err">injoignable — site pas encore déployé ?</span></td>';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pilotage clients — R.Consulting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <style>
+    :root {
+      --ink: #17211c;
+      --muted: #66736c;
+      --line: #dbe3de;
+      --bg: #f3f6f4;
+      --surface: #fff;
+      --brand: #b94f2c;
+      --green: #087f5b;
+      --green-soft: #e8f5ef;
+      --blue: #2368a2;
+      --blue-soft: #eaf2f8;
+      --amber: #a36100;
+      --amber-soft: #fff4dc;
+      --red: #c43d3d;
+      --red-soft: #fdecec;
     }
-    $('tb').appendChild(tr);
-    $('cAvis').textContent=T.tot;$('cFiches').textContent=T.n;$('cLinked').textContent=T.linked;$('cTop3').textContent=T.top3;$('cAlert').textContent=T.alerts;
-  }
-  $('msg').textContent=okN+' / '+SITES.length+' sites lus · '+new Date().toLocaleString('fr-FR');
-  $('go').disabled=false;
-}
-load();
-</script></body></html>
+
+    * { box-sizing: border-box; }
+    body { margin: 0; padding-bottom: 50px; background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    button, input, select { font: inherit; }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 68px;
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(14px);
+    }
+
+    .logo { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 8px; background: var(--ink); color: #fff; font-weight: 800; }
+    .header-title { min-width: 0; flex: 1; }
+    .header-title h1 { margin: 0; font-size: 1.02rem; letter-spacing: 0; }
+    .header-title p { margin: 3px 0 0; color: var(--muted); font: 600 .66rem 'DM Mono', monospace; }
+    .admin-label { border-radius: 5px; padding: 5px 8px; background: var(--blue-soft); color: var(--blue); font: 700 .62rem 'DM Mono', monospace; text-transform: uppercase; }
+
+    .icon-button, .primary-button, .link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .primary-button { padding: 8px 13px; background: var(--ink); color: #fff; }
+    .primary-button:hover { background: #2d3932; }
+    .icon-button { width: 36px; min-height: 36px; border: 1px solid var(--line); background: #fff; color: var(--muted); }
+    .icon-button:hover { color: var(--ink); border-color: #b8c3bd; }
+    .link-button { padding: 7px 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
+    .link-button:hover { border-color: var(--ink); }
+    button svg, a svg { width: 16px; height: 16px; }
+    button:disabled { opacity: .55; cursor: wait; }
+
+    .wrap { width: min(1240px, calc(100% - 32px)); margin: 0 auto; padding-top: 18px; }
+    .tabs { display: flex; width: fit-content; gap: 4px; margin-bottom: 18px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    .tab { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; border: 0; border-radius: 6px; padding: 8px 14px; background: transparent; color: var(--muted); cursor: pointer; font-size: .78rem; font-weight: 800; }
+    .tab.active { background: var(--ink); color: #fff; }
+    .tab-count { min-width: 20px; height: 20px; display: inline-grid; place-items: center; border-radius: 10px; padding: 0 6px; background: var(--brand); color: #fff; font: 700 .62rem 'DM Mono', monospace; }
+    .tab.active .tab-count { background: #fff; color: var(--ink); }
+    .view[hidden] { display: none; }
+
+    .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .stat { min-height: 104px; padding: 15px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(23, 33, 28, .035); }
+    .stat-label { color: var(--muted); font: 700 .62rem 'DM Mono', monospace; text-transform: uppercase; }
+    .stat-value { margin-top: 7px; font-size: 1.6rem; font-weight: 800; line-height: 1; }
+    .stat-note { margin-top: 7px; color: var(--muted); font-size: .7rem; }
+    .stat.orders .stat-value { color: var(--brand); }
+
+    .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .toolbar h2 { margin: 0; flex: 1; font-size: 1.05rem; }
+    .search { width: min(300px, 100%); min-height: 38px; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 8px 11px; color: var(--ink); }
+    .search:focus, select:focus { outline: 3px solid rgba(35, 104, 162, .13); border-color: var(--blue); }
+    .select { min-height: 38px; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 7px 10px; color: var(--ink); }
+    .message { min-height: 24px; margin: 6px 1px; color: var(--muted); font: 600 .68rem 'DM Mono', monospace; }
+
+    .table-shell { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    th { padding: 11px 12px; border-bottom: 1px solid var(--line); background: #f9fbfa; color: var(--muted); font: 700 .59rem 'DM Mono', monospace; text-align: left; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fafcfb; }
+    .client-name { font-weight: 800; }
+    .client-url { margin-top: 3px; color: var(--muted); font: 500 .6rem 'DM Mono', monospace; }
+    .metric { font: 700 .78rem 'DM Mono', monospace; white-space: nowrap; }
+    .positive { color: var(--green); }
+    .danger { color: var(--red); }
+    .star { color: var(--amber); font-weight: 800; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 6px; }
+    .empty { padding: 38px 16px; color: var(--muted); text-align: center; }
+
+    .status { display: inline-flex; border-radius: 5px; padding: 4px 7px; font: 700 .58rem 'DM Mono', monospace; text-transform: uppercase; white-space: nowrap; }
+    .status.new { color: var(--amber); background: var(--amber-soft); }
+    .status.processing { color: var(--blue); background: var(--blue-soft); }
+    .status.done { color: var(--green); background: var(--green-soft); }
+    .order-kind { font-weight: 800; }
+    .order-ref { margin-top: 3px; color: var(--muted); font: 500 .6rem 'DM Mono', monospace; }
+    .order-detail { color: var(--muted); font-size: .72rem; line-height: 1.45; }
+    .site-mark { display: inline-flex; align-items: center; gap: 5px; }
+
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: none; border-radius: 6px; padding: 10px 13px; background: var(--ink); color: #fff; font-size: .76rem; font-weight: 700; box-shadow: 0 8px 24px rgba(23, 33, 28, .2); }
+    .toast.show { display: block; }
+
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .admin-label { display: none; }
+    }
+
+    @media (max-width: 680px) {
+      .header { padding: 10px 12px; }
+      .header-title p { display: none; }
+      .primary-button span { display: none; }
+      .wrap { width: calc(100% - 20px); padding-top: 12px; }
+      .tabs { width: 100%; }
+      .tab { flex: 1; justify-content: center; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat { min-height: 88px; padding: 13px; }
+      .stat-value { font-size: 1.35rem; }
+      .toolbar { align-items: stretch; flex-wrap: wrap; }
+      .toolbar h2 { flex-basis: 100%; }
+      .search { flex: 1 1 190px; }
+      .hide-mobile { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">R.</div>
+    <div class="header-title">
+      <h1>Pilotage clients</h1>
+      <p>R.Consulting · suivi Google Business Profile</p>
+    </div>
+    <span class="admin-label">Administration</span>
+    <button class="primary-button" id="refreshButton" type="button" onclick="loadAll()"><i data-lucide="refresh-cw"></i><span>Actualiser</span></button>
+  </header>
+
+  <main class="wrap">
+    <nav class="tabs" role="tablist" aria-label="Navigation">
+      <button class="tab active" type="button" role="tab" aria-selected="true" data-view="clients" onclick="showView('clients')"><i data-lucide="layout-dashboard"></i>Vue d’ensemble</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-view="orders" onclick="showView('orders')"><i data-lucide="shopping-bag"></i>Commandes <span class="tab-count" id="orderCount">0</span></button>
+    </nav>
+
+    <section class="view" id="clientsView">
+      <div class="stats">
+        <article class="stat"><div class="stat-label">Avis suivis</div><div class="stat-value" id="statReviews">—</div><div class="stat-note" id="statDelta">Dernière évolution</div></article>
+        <article class="stat"><div class="stat-label">Fiches</div><div class="stat-value" id="statListings">—</div><div class="stat-note" id="statLinked">— liées</div></article>
+        <article class="stat"><div class="stat-label">Top 3 local</div><div class="stat-value" id="statTop">—</div><div class="stat-note">Dernier relevé disponible</div></article>
+        <article class="stat"><div class="stat-label">Alertes</div><div class="stat-value" id="statAlerts">—</div><div class="stat-note">Avis perdus ou fiche non liée</div></article>
+        <article class="stat orders"><div class="stat-label">Nouvelles demandes</div><div class="stat-value" id="statOrders">—</div><div class="stat-note">À traiter</div></article>
+      </div>
+
+      <div class="toolbar">
+        <h2>Clients</h2>
+        <input class="search" id="clientSearch" type="search" placeholder="Rechercher un client" oninput="renderClients()">
+      </div>
+      <div class="message" id="loadMessage">Chargement des trackers…</div>
+      <div class="table-shell">
+        <table>
+          <thead><tr><th>Client</th><th>Fiches</th><th>Avis</th><th class="hide-mobile">Note</th><th class="hide-mobile">Top 3</th><th>Alertes</th><th>Demandes</th><th></th></tr></thead>
+          <tbody id="clientRows"><tr><td colspan="8" class="empty">Chargement…</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="ordersView" hidden>
+      <div class="toolbar">
+        <h2>Commandes reçues</h2>
+        <input class="search" id="orderSearch" type="search" placeholder="Client, ville ou activité" oninput="renderOrders()">
+        <select class="select" id="orderTypeFilter" onchange="renderOrders()" aria-label="Filtrer par type">
+          <option value="all">Tous les types</option>
+          <option value="avis">Avis Google</option>
+          <option value="fiche">Nouvelles fiches</option>
+        </select>
+      </div>
+      <div class="message" id="orderMessage">Toutes les demandes envoyées depuis les trackers clients.</div>
+      <div class="table-shell">
+        <table>
+          <thead><tr><th>Client</th><th>Demande</th><th>Ville / activité</th><th>Quantités</th><th class="hide-mobile">Site</th><th>Statut</th><th>Reçue</th></tr></thead>
+          <tbody id="orderRows"><tr><td colspan="7" class="empty">Aucune demande reçue.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const SITES = [
+      { name: 'Antoine', zone: 'Haute-Savoie + Var', url: 'https://trackerantoine.netlify.app' },
+      { name: 'Christian 1', zone: 'P1 Belgique', url: 'https://trackerp1belgique.netlify.app' },
+      { name: 'Christian 2', zone: 'P2 Belgique', url: 'https://trackergmb.netlify.app' },
+      { name: 'Christian 3', zone: 'Bruxelles / Brabant', url: 'https://trackerchristian-3.netlify.app' },
+      { name: 'David', zone: 'Alsace', url: 'https://trackerdavidd.netlify.app' },
+      { name: 'Jérémy', zone: '06 + Île-de-France', url: 'https://trackerjeremy.netlify.app' },
+      { name: 'Logan', zone: 'Hérault', url: 'https://trackerlogan.netlify.app' },
+      { name: 'Michel', zone: 'Var + Nice', url: 'https://trackermichel.netlify.app' },
+      { name: 'Sacha', zone: 'Belgique', url: 'https://trackersacha.netlify.app' },
+      { name: 'Sander', zone: 'Est-Var', url: 'https://trackersander.netlify.app' },
+      { name: 'Timmy', zone: 'Rhône-Alpes', url: 'https://trackertimmy.netlify.app' },
+      { name: 'Mika', zone: 'Clim, PAC + dératisation', url: 'https://trackermika.netlify.app' }
+    ];
+
+    let clients = [];
+    let orders = [];
+    const byId = id => document.getElementById(id);
+    const esc = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    const dates = value => Object.keys(value || {}).sort();
+
+    function refreshIcons() {
+      if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+    }
+
+    function siteStats(data) {
+      const reviews = data.avis || {};
+      const ranks = data.rank || {};
+      const ids = data.ids || {};
+      const reviewDates = dates(reviews);
+      const current = reviews[reviewDates[reviewDates.length - 1]] || {};
+      const previous = reviews[reviewDates[reviewDates.length - 2]] || {};
+      const rankDates = dates(ranks);
+      const currentRank = {};
+      rankDates.forEach(date => Object.assign(currentRank, ranks[date] || {}));
+      let total = 0, pairedCurrent = 0, pairedPrevious = 0, linked = 0, top3 = 0, alerts = 0;
+      const notes = [];
+
+      (data.fiches || []).forEach(fiche => {
+        const now = current[fiche.name];
+        const before = previous[fiche.name];
+        if (ids[fiche.name]) linked += 1;
+        else alerts += 1;
+        if (now && Number.isFinite(now.n)) total += now.n;
+        if (now && before && Number.isFinite(now.n) && Number.isFinite(before.n)) {
+          pairedCurrent += now.n;
+          pairedPrevious += before.n;
+          if (now.n < before.n) alerts += 1;
+        }
+        if (now && now.r) notes.push(now.r);
+        if (currentRank[fiche.name] != null && currentRank[fiche.name] <= 3) top3 += 1;
+      });
+
+      return {
+        listings: (data.fiches || []).length,
+        linked,
+        total,
+        delta: pairedPrevious ? pairedCurrent - pairedPrevious : 0,
+        average: notes.length ? notes.reduce((sum, note) => sum + note, 0) / notes.length : null,
+        top3,
+        alerts
+      };
+    }
+
+    async function fetchWithTimeout(url, timeoutMs = 15000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { signal: controller.signal });
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    async function fetchClient(site) {
+      const dataResponse = await fetchWithTimeout(site.url + '/.netlify/functions/data');
+      if (!dataResponse.ok) throw new Error('tracker indisponible');
+      const data = await dataResponse.json();
+      let clientOrders = [];
+      try {
+        const orderResponse = await fetchWithTimeout(site.url + '/.netlify/functions/orders');
+        if (orderResponse.ok) {
+          const payload = await orderResponse.json();
+          clientOrders = Array.isArray(payload.orders) ? payload.orders : [];
+        }
+      } catch (error) {}
+      return { ...site, stats: siteStats(data), orders: clientOrders, online: true };
+    }
+
+    function orderStatus(status) {
+      if (status === 'terminee') return { label: 'Terminée', css: 'done' };
+      if (status === 'en_cours') return { label: 'En cours', css: 'processing' };
+      return { label: 'Reçue', css: 'new' };
+    }
+
+    function renderStats() {
+      const totals = clients.reduce((all, client) => {
+        if (!client.online) return all;
+        const stat = client.stats;
+        all.reviews += stat.total;
+        all.delta += stat.delta;
+        all.listings += stat.listings;
+        all.linked += stat.linked;
+        all.top3 += stat.top3;
+        all.alerts += stat.alerts;
+        return all;
+      }, { reviews: 0, delta: 0, listings: 0, linked: 0, top3: 0, alerts: 0 });
+      const newOrders = orders.filter(order => !order.status || order.status === 'nouvelle').length;
+      byId('statReviews').textContent = totals.reviews.toLocaleString('fr-FR');
+      byId('statDelta').textContent = (totals.delta > 0 ? '+' : '') + totals.delta + ' depuis le relevé précédent';
+      byId('statListings').textContent = totals.listings;
+      byId('statLinked').textContent = totals.linked + ' liées';
+      byId('statTop').textContent = totals.top3;
+      byId('statAlerts').textContent = totals.alerts;
+      byId('statOrders').textContent = newOrders;
+      byId('orderCount').textContent = newOrders;
+    }
+
+    function renderClients() {
+      const query = byId('clientSearch').value.trim().toLowerCase();
+      const filtered = clients.filter(client => (client.name + ' ' + client.zone).toLowerCase().includes(query));
+      byId('clientRows').innerHTML = filtered.length ? filtered.map(client => {
+        if (!client.online) {
+          return '<tr><td><div class="client-name">' + esc(client.name) + '</div><div class="client-url">' + esc(client.zone) + '</div></td><td colspan="6" class="danger">Tracker indisponible</td><td><div class="row-actions"><a class="link-button" href="' + client.url + '?admin" target="_blank" rel="noopener" title="Ouvrir le tracker"><i data-lucide="external-link"></i></a></div></td></tr>';
+        }
+        const stat = client.stats;
+        const newOrders = client.orders.filter(order => !order.status || order.status === 'nouvelle').length;
+        const delta = stat.delta ? '<span class="' + (stat.delta > 0 ? 'positive' : 'danger') + '"> ' + (stat.delta > 0 ? '+' : '') + stat.delta + '</span>' : '';
+        return '<tr>' +
+          '<td><div class="client-name">' + esc(client.name) + '</div><div class="client-url">' + esc(client.zone) + '</div></td>' +
+          '<td class="metric">' + stat.listings + ' <span class="positive">(' + stat.linked + ' liées)</span></td>' +
+          '<td class="metric">' + stat.total.toLocaleString('fr-FR') + delta + '</td>' +
+          '<td class="hide-mobile"><span class="star">' + (stat.average ? stat.average.toFixed(2) + ' ★' : '—') + '</span></td>' +
+          '<td class="metric hide-mobile">' + stat.top3 + '</td>' +
+          '<td class="metric ' + (stat.alerts ? 'danger' : 'positive') + '">' + stat.alerts + '</td>' +
+          '<td class="metric ' + (newOrders ? 'danger' : '') + '">' + newOrders + '</td>' +
+          '<td><div class="row-actions"><button class="icon-button" type="button" onclick="copyClientLink(\'' + client.url + '\')" title="Copier le lien client"><i data-lucide="copy"></i></button><a class="link-button" href="' + client.url + '?admin" target="_blank" rel="noopener" title="Ouvrir en administrateur"><i data-lucide="external-link"></i></a></div></td>' +
+          '</tr>';
+      }).join('') : '<tr><td colspan="8" class="empty">Aucun client ne correspond.</td></tr>';
+      refreshIcons();
+    }
+
+    function renderOrders() {
+      const query = byId('orderSearch').value.trim().toLowerCase();
+      const type = byId('orderTypeFilter').value;
+      const filtered = orders.filter(order => {
+        const haystack = [order.client, order.city, order.activity, order.listingName, order.id].join(' ').toLowerCase();
+        return (!query || haystack.includes(query)) && (type === 'all' || order.type === type);
+      });
+      byId('orderRows').innerHTML = filtered.length ? filtered.map(order => {
+        const status = orderStatus(order.status);
+        const kind = order.type === 'fiche' ? 'Nouvelle fiche Google' : 'Avis Google';
+        const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+        const quantities = (order.listingCount || 1) + ' fiche(s)<br>' + (order.comments || 0) + ' avis · ' + (order.photos || 0) + ' photos';
+        return '<tr>' +
+          '<td><div class="client-name">' + esc(order.client) + '</div><div class="client-url">' + esc(order.zone) + '</div></td>' +
+          '<td><div class="order-kind">' + esc(kind) + '</div><div class="order-ref">' + esc(order.id) + (order.listingName ? ' · ' + esc(order.listingName) : '') + '</div></td>' +
+          '<td><div>' + esc(order.city) + '</div><div class="order-detail">' + esc(order.activity) + '</div></td>' +
+          '<td class="order-detail">' + quantities + '</td>' +
+          '<td class="hide-mobile"><span class="site-mark"><i data-lucide="' + (order.hasSite ? 'circle-check' : 'circle-minus') + '"></i>' + (order.hasSite ? 'Oui' : 'Non') + '</span></td>' +
+          '<td><span class="status ' + status.css + '">' + status.label + '</span></td>' +
+          '<td class="order-detail">' + esc(date) + '</td>' +
+          '</tr>';
+      }).join('') : '<tr><td colspan="7" class="empty">Aucune demande ne correspond.</td></tr>';
+      byId('orderMessage').textContent = filtered.length + ' demande(s) affichée(s).';
+      refreshIcons();
+    }
+
+    window.showView = view => {
+      const isOrders = view === 'orders';
+      byId('clientsView').hidden = isOrders;
+      byId('ordersView').hidden = !isOrders;
+      document.querySelectorAll('.tab').forEach(button => {
+        const active = button.dataset.view === view;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      history.replaceState(null, '', isOrders ? '#commandes' : location.pathname);
+      refreshIcons();
+    };
+
+    window.copyClientLink = async url => {
+      try {
+        await navigator.clipboard.writeText(url);
+        const toast = byId('toast');
+        toast.textContent = 'Lien client copié';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1800);
+      } catch (error) {
+        window.prompt('Lien client', url);
+      }
+    };
+
+    window.loadAll = async () => {
+      const button = byId('refreshButton');
+      button.disabled = true;
+      clients = [];
+      orders = [];
+      let completed = 0;
+      byId('loadMessage').textContent = 'Lecture de 0 / ' + SITES.length + ' trackers…';
+
+      const results = await Promise.all(SITES.map(async site => {
+        try {
+          return await fetchClient(site);
+        } catch (error) {
+          return { ...site, online: false, orders: [] };
+        } finally {
+          completed += 1;
+          byId('loadMessage').textContent = 'Lecture de ' + completed + ' / ' + SITES.length + ' trackers…';
+        }
+      }));
+
+      clients = results.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+      orders = clients.flatMap(client => (client.orders || []).map(order => ({ ...order, client: client.name, zone: client.zone, trackerUrl: client.url })))
+        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+      renderStats();
+      renderClients();
+      renderOrders();
+      const online = clients.filter(client => client.online).length;
+      byId('loadMessage').textContent = online + ' / ' + SITES.length + ' trackers connectés · ' + new Date().toLocaleString('fr-FR');
+      button.disabled = false;
+      refreshIcons();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshIcons();
+      if (location.hash === '#commandes') showView('orders');
+      loadAll();
+    });
+  </script>
+</body>
+</html>
